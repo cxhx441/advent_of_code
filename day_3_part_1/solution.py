@@ -4,9 +4,9 @@ def input_to_list(infile):
         for line in f:
             line = line[:-1]
             halfway = len(line)//2
-            comp1 = set(line[:halfway])
-            comp2 = set(line[halfway:])
-            item = comp1.intersection(comp2)
+            compartment_1 = set(line[:halfway])
+            compartment_2 = set(line[halfway:])
+            item = compartment_1 & compartment_2 # intesersection
             data.append(item)
     return data
 
@@ -17,11 +17,10 @@ def priority(character):
         return ord(character) - 64 + 26
 
 # items = input_to_list("sample_input.txt") #
-items = input_to_list("real_input.txt") #
+common_items = input_to_list("real_input.txt") #
 
-# print(items)
 cur_sum = 0
-for item in items:
-    for i in item:
-        cur_sum += priority(i)
+for item in common_items:
+    cur_sum += priority(item.pop())
+
 print(cur_sum)

@@ -12,20 +12,15 @@ def priority(character):
         return ord(character) - 64 + 26
 
 # items = input_to_list("sample_input.txt") #
-items = input_to_list("real_input.txt") #
+rucksacks = input_to_list("real_input.txt") #
 
-print(items)
 cur_sum = 0
-for i in range(0, len(items), 3):
-    line1 = set(items[i])
-    line2 = set(items[i+1])
-    line3 = set(items[i+2])
+for i in range(0, len(rucksacks), 3):
+    rucksack_1 = set(rucksacks[i])
+    rucksack_2 = set(rucksacks[i+1])
+    rucksack_3 = set(rucksacks[i+2])
 
-    badge = line1.intersection(line2.intersection(line3))
-    for k in badge:
-        badge = k
-    cur_sum += priority(badge)
-
-
+    badge_set = rucksack_1 & rucksack_2 & rucksack_3 # intersection
+    cur_sum += priority(badge_set.pop())
 
 print(cur_sum)
