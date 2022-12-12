@@ -29,9 +29,9 @@ class monkey():
     def operation(self, worry):
         if self.operator == 'old * old':
             return worry * worry
-        if self.operator == 'old + old':
+        elif self.operator == 'old + old':
             return worry + worry
-        if self.operator == '*':
+        elif self.operator == '*':
                 return worry * self.operation_val
         elif self.operator == '+':
             return worry + self.operation_val
@@ -48,7 +48,8 @@ class monkey():
         to_pass = []
         for item in self.items:
             new_item = self.operation(item) # inspect / run operation
-            # new_item = new_item // 3 # relief
+            new_item = new_item % supermodulo[0]
+            # new_item = new_item // 10 # relief #### THIS PART MAKING IT NOT RUN
             to_monkey = self.test(new_item)
             to_pass.append((new_item, to_monkey))
             self.inspection_count += 1
@@ -56,9 +57,8 @@ class monkey():
         return to_pass
 
 
-
-infile = "real_input.txt"
 infile = "sample_input.txt"
+infile = "real_input.txt"
 monkeys = []
 data = []
 with open(infile, 'r') as f:
@@ -74,7 +74,10 @@ for i in range(0, len(data), 7):
     false_case = data[i+5]
     monkeys.append(monkey(monkey_num[:-1], items, operation, test, true_case, false_case))
 
-for i in range(10000):
+supermodulo = [1]
+for monkey in monkeys:
+    supermodulo[0] *= monkey.test_val
+for i in range(10000): # need to be 10000
     for monkey in monkeys:
         to_pass = monkey.inspect_items()
         for new_item, to_monkey in to_pass:
@@ -83,6 +86,7 @@ for i in range(10000):
 
 counts = []
 for monkey in monkeys:
+    print(monkey.inspection_count, monkey.monkey_num)
     counts.append((monkey.inspection_count, monkey.monkey_num))
 
 counts.sort()
