@@ -7,8 +7,6 @@ class valve():
     def __lt__(self, other):
         return self.flow_rate < other.flow_rate
 
-
-
     def __repr__(self) -> str:
         return self.label
 
@@ -69,34 +67,11 @@ print()
 for i in useful_valves:
     print(i, i.flow_rate)
 
-# do a backtracking thing
-def backtracking(start, travel_times, useful_valves, mins=30):
-    def helper(cur_valve, mins, cur_max, index, choices):
-        if mins < 0:
-            return
-        if mins == 0:
-            solutions.append(cur_max)
-        next_valve = useful_valves[index]
-        mins -= travel_times[cur_valve][next_valve]
-        choices.append(next_valve)
-        mins -= 1
-        cur_max += mins*next_valve.flow_rate
-        index += 1
-        helper(next_valve,
-                mins,
-                cur_max,
-                index,
-                choices)
-        index -= 1
-        cur_max -= mins*next_valve.flow_rate
-        mins += 1
-        choices.pop()
-        mins += travel_times[cur_valve][next_valve]
-        return
+# greedy
+cur_valve = start
+cur_flow = 0
+mins = 30
+while mins > 0:
 
-    solutions = []
-    choices = []
-    helper(start, mins, 0, 1, choices)
-    return solutions
-# Python function to print permutations of a given list
-# solution = backtracking(start, travel_times, useful_valves, mins=30)
+
+21*
