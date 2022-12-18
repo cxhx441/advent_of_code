@@ -52,9 +52,9 @@ def sort_and_merge_ranges(no_beacon_coverage, y):
 infile, ROW_OF_INTEREST, COORD_MAX = "sample_input.txt", 10, 20
 infile, ROW_OF_INTEREST, COORD_MAX = "real_input.txt", 2_000_000, 4_000_000
 
-sensors_to_nearest_beacon, beacons, sensors = get_sensors_and_beacons(infile) # (x, y) : (x, y)
+sensors_to_nearest_beacon, beacons, sensors = get_sensors_and_beacons(infile)
 dist_from_sens_to_beacon = get_distances(sensors_to_nearest_beacon)
-no_beacon_coverage = defaultdict(list)
+coverage = defaultdict(list)
 
 # TEST AOC EXAMPLE
 # sensors = dict()
@@ -67,12 +67,12 @@ no_beacon_coverage = defaultdict(list)
 # add sensors and beacons to coverage
 for sensor, beacon in sensors_to_nearest_beacon.items():
     if sensor[0] in range(COORD_MAX+1) and sensor[1] in range(COORD_MAX+1):
-        no_beacon_coverage[sensor[1]].append(list((sensor[0], sensor[0])))
-        sort_and_merge_ranges(no_beacon_coverage, sensor[1])
+        coverage[sensor[1]].append(list((sensor[0], sensor[0])))
+        sort_and_merge_ranges(coverage, sensor[1])
 
     if beacon[0] in range(COORD_MAX+1) and beacon[1] in range(COORD_MAX+1):
-        no_beacon_coverage[beacon[1]].append(list((beacon[0], beacon[0])))
-        sort_and_merge_ranges(no_beacon_coverage, beacon[1])
+        coverage[beacon[1]].append(list((beacon[0], beacon[0])))
+        sort_and_merge_ranges(coverage, beacon[1])
 
 # add sensed areas to coverage
 count = 0 # just for printing
@@ -90,14 +90,14 @@ for sensor in sensors_to_nearest_beacon:
         col = sensor[0]
         if row_up in range(COORD_MAX+1):
             left, right = max(0, col-x_expansion), min(COORD_MAX, col+x_expansion)
-            no_beacon_coverage[row_up].append(list((left, right)))
-            sort_and_merge_ranges(no_beacon_coverage, row_up)
+            coverage[row_up].append(list((left, right)))
+            sort_and_merge_ranges(coverage, row_up)
         if row_down in range(COORD_MAX+1):
             left, right = max(0, col-x_expansion), min(COORD_MAX, col+x_expansion)
-            no_beacon_coverage[row_down].append(list((left, right)))
-            sort_and_merge_ranges(no_beacon_coverage, row_down)
+            coverage[row_down].append(list((left, right)))
+            sort_and_merge_ranges(coverage, row_down)
 
-for row, rnge in no_beacon_coverage.items():
+for row, rnge in coverage.items():
     if len(rnge) > 1:
         print(row, rnge)
         col = rnge[0][1] + 1
