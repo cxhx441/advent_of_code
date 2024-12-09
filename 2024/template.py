@@ -17,7 +17,7 @@ assert result_1 == 41
 
 # start = timer()
 # input = parse_input("2024//puzzle_input//d#_input.txt")
-# result = solution_2(input)
+# result = solution_1(input)
 # print(result)
 # end = timer()
 # print( f"{( end - start ) * 1000}ms" )
@@ -28,7 +28,7 @@ assert result_1 == 41
 #     return 0
 
 # input = parse_input("2024//puzzle_input//d#_input_ex.txt")
-# result_2 = solution_1(input)
+# result_2 = solution_2(input)
 # print(result_2)
 # assert result_2 == 41
 
