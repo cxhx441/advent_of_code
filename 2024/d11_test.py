@@ -77,15 +77,46 @@ class Solution1Test(unittest.TestCase):
 
 
 
-# class Solution2Test(unittest.TestCase):
-#     def test_solution2_result_on_example(self):
-#         stones = parse_input("puzzle_input//d11_input_ex2.txt")
-#         result = solution_2(stones)
-#         self.assertEqual(result, 81)  # add assertion here
-    def test_solution2_on_example1(self):
-        stones = parse_input("puzzle_input//d11_input_ex1.txt")
+class Solution2Test(unittest.TestCase):
+    # def test_solution2_result_on_example(self):
+    #     stones = parse_input("puzzle_input//d11_input_ex2.txt")
+    #     result = solution_2(stones)
+    #     self.assertEqual(result, 81)  # add assertion here
+
+    def test_solution2_on_1_stone(self):
+        # stones = parse_input("puzzle_input//d11_input_ex1.txt")
+        stones = Node(1)
+        count = solution_2(stones, 5)
+        self.assertEqual(7, count)
+
+        stones = Node(1)
+        count = solution_2(stones, 5)
+        self.assertEqual(7, count)
+
+    def test_solution2_on_ex1(self):
+        stones = parse_input("puzzle_input//d11_input_ex2.txt")
         count = solution_2(stones, 6)
         self.assertEqual(22, count)
+
+        start = timer()
+        count = solution_2(stones, 25)
+        self.assertEqual(55312, count)
+        end = timer()
+        print( f"{( end - start ) * 1000}ms" )
+
+        start = timer()
+        count = solution_2(stones, 25)
+        self.assertEqual(55312, count)
+        end = timer()
+        print( f"{( end - start ) * 1000}ms" )
+
+    def test_solution2_on_ex1(self):
+        stones = parse_input("puzzle_input//d11_input.txt")
+        start = timer()
+        count = solution_2(stones, 25)
+        self.assertEqual(203228, count)
+        end = timer()
+        print( f"{( end - start ) * 1000}ms" )
 
 if __name__ == '__main__':
     unittest.main()

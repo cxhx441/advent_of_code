@@ -1,3 +1,4 @@
+import collections
 from timeit import default_timer as timer
 class Node:
     def __init__(self, val, prev=None, next=None, blinked=0):
@@ -85,22 +86,26 @@ def solution_1(stones):
     return stones.count()
 
 def solution_2(stones, blink_count):
-    memo = {}
+    stone_counts = collections.defaultdict(int)
 
-    def recurse(stone, count):
-        if stone.val not in memo or count not in memo[stone.val]:
-            if count == 1:
-                memo[stone.val][count] = blink(stone).count()
-            else:
-                memo[ (stone.val, count) ] = recurse(stone, count - 1)
-        return memo[ (stone.val, count) ]
-
-    total = 0
     cur = stones
+    stones_list = []
     while cur:
-        tmp = Node(cur.val)
-        total += recurse(tmp, blink_count)
+        stones_list.append( cur.val )
         cur = cur.next
+
+    for s in stones_list:
+        stone_counts[s] += 1
+
+    for i in range(blink_count):
+        copy_stone_counts = stone_counts.copy()
+        for stone, count in copy_stone_counts.items():
+            stone_counts[stone] -= count
+            new_stones = blink(Node(stone)).get_list()
+            for new_stone in new_stones:
+                stone_counts[new_stone] += count
+
+    total = sum(stone_counts.values())
     return total
 
 if __name__ == '__main__':
@@ -113,7 +118,7 @@ if __name__ == '__main__':
 
     start = timer()
     stones = parse_input("puzzle_input//d11_input.txt")
-    result = solution_2(stones)
+    result = solution_2(stones, 75)
     end = timer()
     print( f"{( end - start ) * 1000}ms" )
     print(f'Solution2: {result}')
