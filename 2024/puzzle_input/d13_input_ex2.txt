@@ -1,0 +1,7 @@
+Button A: X+1000, Y+1000
+Button B: X+1, Y+2
+Prize: X=100, Y=200
+
+Button A: X+1, Y+2
+Button B: X+1000, Y+1000
+Prize: X=100, Y=200
