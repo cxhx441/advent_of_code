@@ -29,4 +29,4 @@ if __name__ == "__main__":
     # result_2 = solution_2(input)
     # end = timer()
     # print( f"{( end - start ) * 1000}ms" )
-    # print(f'Solution2: {result}')
+    # print(f'Solution2: {result_2}')

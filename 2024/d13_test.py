@@ -34,12 +34,12 @@ class Solution2Test(unittest.TestCase):
     def test_solution2_result_on_example1(self):
         machines = parse_input("puzzle_input//d13_input_ex1.txt")
         self.assertEqual(machines[0].get_cost2(), 280)  # add assertion here
-        # self.assertEqual(machines[1].get_cost2(), 0)  # add assertion here
-        # self.assertEqual(machines[2].get_cost2(), 200)  # add assertion here
-        # self.assertEqual(machines[3].get_cost2(), 0)  # add assertion here
+        self.assertEqual(machines[1].get_cost2(), 0)  # add assertion here
+        self.assertEqual(machines[2].get_cost2(), 200)  # add assertion here
+        self.assertEqual(machines[3].get_cost2(), 0)  # add assertion here
 
-        result = solution_2(machines)
-        self.assertEqual(result, 480)  # add assertion here
+        # result = solution_2(machines)
+        # self.assertEqual(result, 480)  # add assertion here
 
     # def test_solution1_result_on_example2(self):
     #     machines = parse_input("puzzle_input//d13_input_ex2.txt")

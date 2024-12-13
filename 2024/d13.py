@@ -1,4 +1,6 @@
 import math
+
+import numpy as np
 from timeit import default_timer as timer
 class Machine:
     def __init__(self, Ax, Ay, Bx, By, Px, Py):
@@ -23,13 +25,17 @@ class Machine:
                     return cost
         return 0
 
-    def get_cost2(self):
-        self.Px += 10000000000000
-        self.Py += 10000000000000
-        determ = self.Ax * self.By - self.Bx * self.Ay
-        if any([determ == 0, a_num % self.d != 0, b_num % self.d != 0]):
+    def get_cost2(self, w_error=False):
+        if w_error is True:
+            self.Px += 10000000000000
+            self.Py += 10000000000000
+        A = np.array([[self.Ax, self.Bx], [self.Ay, self.By]])
+        B = np.array([self.Px, self.Py])
+        a, b = np.linalg.solve(A, B)
+        if not (math.isclose(a, round(a)) and math.isclose(b, round(b))):
             return 0
-        # TODO linear equation solver?
+        cost = self._calc_cost(round(a), round(b))
+        return cost
 
 
 
@@ -71,11 +77,14 @@ def parse_input(filename):
 def solution_1(machines):
     total = 0
     for machine in machines:
-        total += machine.get_cost()
+        total += machine.get_cost2(w_error=False)
     return total
 
 def solution_2(x):
-    return 0
+    total = 0
+    for machine in machines:
+        total += machine.get_cost2(w_error=True)
+    return total
 
 if __name__ == "__main__":
     start = timer()
@@ -93,9 +102,9 @@ if __name__ == "__main__":
     # print(f'Solution1: {result}')
 
 
-    # start = timer()
-    # input = parse_input("puzzle_input//d#_input.txt")
-    # result_2 = solution_2(input)
-    # end = timer()
-    # print( f"{( end - start ) * 1000}ms" )
-    # print(f'Solution2: {result}')
+    start = timer()
+    machines = parse_input("puzzle_input//d13_input.txt")
+    result_2 = solution_2(machines)
+    end = timer()
+    print( f"{( end - start ) * 1000}ms" )
+    print(f'Solution2: {result_2}')
