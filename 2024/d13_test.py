@@ -38,6 +38,9 @@ class Solution2Test(unittest.TestCase):
         self.assertEqual(machines[2].get_cost2(), 200)  # add assertion here
         self.assertEqual(machines[3].get_cost2(), 0)  # add assertion here
 
+        self.assertEqual(machines[0].get_cost2(w_error=True), 0)  # add assertion here
+        self.assertEqual(machines[2].get_cost2(w_error=True), 0)  # add assertion here
+
         # result = solution_2(machines)
         # self.assertEqual(result, 480)  # add assertion here
 

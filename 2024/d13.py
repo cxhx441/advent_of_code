@@ -14,8 +14,20 @@ class Machine:
         self.B_cost = 1
         self.coin_limit = 100
 
-    def _calc_cost(self, a, b):
-        return (a * self.A_cost) + (b * self.B_cost)
+
+    def get_cost2(self, w_error=False):
+        Px, Py = self.Px, self.Py
+        if w_error is True:
+            Px += 10000000000000
+            Py += 10000000000000
+        A = np.array([[self.Ax, self.Bx], [self.Ay, self.By]])
+        b = np.array([Px , Py])
+        x = np.linalg.solve(A, b)
+        i, j = x
+        if not (abs(i - round(i)) < 0.001 and abs(j - round(j)) < 0.001):
+            return 0
+        cost = (round(i) * self.A_cost) + (round(j) * self.B_cost)
+        return cost
 
     def get_cost(self):
         for a in range(self.coin_limit + 1):
@@ -25,17 +37,6 @@ class Machine:
                     return cost
         return 0
 
-    def get_cost2(self, w_error=False):
-        if w_error is True:
-            self.Px += 10000000000000
-            self.Py += 10000000000000
-        A = np.array([[self.Ax, self.Bx], [self.Ay, self.By]])
-        B = np.array([self.Px, self.Py])
-        a, b = np.linalg.solve(A, B)
-        if not (math.isclose(a, round(a)) and math.isclose(b, round(b))):
-            return 0
-        cost = self._calc_cost(round(a), round(b))
-        return cost
 
 
 
