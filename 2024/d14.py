@@ -63,7 +63,7 @@ def solution_2(data, rows, cols, limit=float("inf")):
 
         haves = {x for x in log if log[x] > 0}
         if len(haves) == 500:
-            with open('out.txt', 'a') as out_file:
+            with open('xmas_tree.txt', 'a') as out_file:
                 print(time, file=out_file)
                 print(time)
                 # printit()
