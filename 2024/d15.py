@@ -124,13 +124,16 @@ def solution_2(grid, moves):
     def push_v(move, start):
         dr = move_dic[move][0]
 
-        # q = collections.deque([start])
         q = set()
         q.add( (start[0], start[1]) )
+        # q = collections.deque()
+        # q.append( (start[0], start[1]) )
         while q:
+            # new_q = collections.deque()
             new_q = set()
             lq = len(q)
             for _ in range(lq):
+                # r, c = q.popleft()
                 r, c = q.pop()
                 if grid[r][c] != '.' and grid[r][c] != '#':
                     r += dr
@@ -144,56 +147,69 @@ def solution_2(grid, moves):
                         return start
             q = new_q
 
-        q = set()
-        q.add( (start[0], start[1], '.') )
+        r, c = start
+        grid[r][c] = '.'
+        nr = r + dr
+        q = collections.deque()
+        if grid[nr][c] == '[':
+            grid[r][c] = '@'
+            grid[r][c+1] = '.'
+            q.append((nr, c, '['))
+            q.append((nr, c + 1, ']'))
+        elif grid[nr][c] == ']':
+            grid[r][c-1] = '.'
+            grid[r][c] = '@'
+            q.append((nr, c - 1, '['))
+            q.append((nr, c, ']'))
+
         while q:
-            new_q = set()
             lq = len(q)
-            for _ in range(lq):
-                r, c, prev = q.pop()
-                cur = grid[r][c]
-                grid[r][c] = prev
+            if lq == 2:
+                r, c0, prev0 = q.popleft()
+                r, c1, prev1 = q.popleft()
 
-                if cur != '.':
-                    r += dr
-                    if grid[r][c] == '[':
-                        new_q.add((r, c, cur))
-                        if cur == '[':
-                            new_q.add((r, c + 1, ']'))
-                        else:
-                            new_q.add((r, c + 1, '.'))
-                    elif grid[r][c] == ']':
-                        new_q.add((r, c, cur))
-                        if cur == ']':
-                            new_q.add((r, c - 1, '['))
-                        else:
-                            new_q.add((r, c - 1, '.'))
-                    elif grid[r][c] == '.':
-                        new_q.add((r, c, cur))
+                cur0 = grid[r][c0]
+                cur1 = grid[r][c1]
+                grid[r][c0] = prev0
+                grid[r][c1] = prev1
 
-            q = new_q
+                prev0 = cur0
+                prev1 = cur1
+
+                nr = r + dr
+                if grid[nr][c0] == '[' and grid[nr][c1] == ']':
+                    q.append((nr, c0, '['))
+                    q.append((nr, c1, ']'))
+                elif grid[nr][c0] == ']' and grid[nr][c1] == '[':
+                    q.append((nr, c0, '['))
+                    q.append((nr, c1, ']'))
+
+
+
         return start[0] + dr, start[1]
 
     print_grid(grid)
     print()
     start = get_start(grid)
-    mv_i = 0
-    for move in moves:
+    for i, move in enumerate(moves):
+        if i >= 14086:
+            print_grid(grid)
         if is_error(grid):
-            break
+            print(f'error at: {i}')
+            return None
         if move == '<' or move == '>':
             start = push_h(move, start)
         elif move == 'v' or move == '^':
             start = push_v(move, start)
         # print(move)
         # print_grid(grid)
-        # if mv_i + 1 < len(moves):
-        #     print(moves[mv_i + 1])
-        #     mv_i += 1
+        # if i + 1 < len(moves):
+        #     print(moves[i + 1])
+        #     i += 1
         # print()
 
 
-    print_grid(grid)
+    # print_grid(grid)
     cost = get_cost(grid)
     return cost
 
@@ -203,14 +219,18 @@ def is_error(grid):
         for c in range(COLS):
             if grid[r][c] == '[':
                 if grid[r][c + 1] != ']':
+                    print_grid(grid)
                     return True
             elif grid[r][c] == ']':
                 if grid[r][c - 1] != '[':
+                    print_grid(grid)
                     return True
     return False
 
-
+# 1506177 too high
 # 1444879 too high
+# 1435773
+# 1426660
 # 1422938 too low
 if __name__ == "__main__":
     pass
