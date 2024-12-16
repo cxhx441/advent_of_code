@@ -1,4 +1,6 @@
 import unittest
+from gc import get_referrers
+
 from d15 import *
 
 class Solution1Test(unittest.TestCase):
@@ -11,8 +13,6 @@ class Solution1Test(unittest.TestCase):
         self.assertEqual(grid[1][3], 'O')
         self.assertEqual(grid[2][2], '@')
         self.assertEqual(moves, '<^^>>>vv<v>>v<<')
-
-
 
     def test_solution1_result_on_example1(self):
         grid, moves = parse_input("puzzle_input//d15_input_ex1.txt")
@@ -45,13 +45,161 @@ class Solution1Test(unittest.TestCase):
         self.assertEqual(result, 2028)
 
 class Solution2Test(unittest.TestCase):
+    def test_solution2_result_on_example2(self):
+        grid, moves = parse_input("puzzle_input//d15_input_ex3.txt")
+        upsized_grid = upsize_grid(grid)
+        upsized_grid_should_be = ['##############',
+                                  '##......##..##',
+                                  '##..........##',
+                                  '##....[][]@.##',
+                                  '##....[]....##',
+                                  '##..........##',
+                                  '##############']
+        print_grid(grid)
+        print()
+        print_grid(upsized_grid)
+        upsized_grid_strs = []
+        for r in range(len(grid)):
+            upsized_grid_strs.append(''.join(upsized_grid[r]))
+        self.assertEqual(upsized_grid_should_be, upsized_grid_strs)
+
+    def test_solution2_result_on_example3(self):
+        grid, moves = parse_input("puzzle_input//d15_input_ex3.txt")
+        upsized_grid = upsize_grid(grid)
+        result = solution_2(upsized_grid, moves)
+        final_up_grid_should_be = [
+            '##############',
+            '##...[].##..##',
+            '##...@.[]...##',
+            '##....[]....##',
+            '##..........##',
+            '##..........##',
+            '##############'
+            ]
+
+        grid_strs = []
+        for r in range(len(upsized_grid)):
+            grid_strs.append(''.join(upsized_grid[r]))
+        self.assertEqual(final_up_grid_should_be, grid_strs)
+
     def test_solution2_result_on_example1(self):
-        data = parse_input("puzzle_input//d15_input_ex1.txt")
-        result = solution_2(data, 7, 11)
-        print(result)
-        rows, cols = 7, 11
-        tree = get_tree1(rows, cols)
-        print_tree(tree, only_have=True)
+        grid, moves = parse_input("puzzle_input//d15_input_ex1.txt")
+        upsized_grid = upsize_grid(grid)
+        result = solution_2(upsized_grid, moves)
+        self.assertEqual(result, 9021)
+
+    def test_solution2_result_on_customexample1(self):
+        upgrid = [ ['#','#','#','#'],
+                   ['#','.','.','#'],
+                   ['#','[',']','#'],
+                   ['#','[',']','#'],
+                   ['#','@','.','#'],
+                   ['#','#','#','#']]
+        moves = '^^'
+        final_should_be = [ ['#','#','#', '#'],
+                            ['#','[',']','#'],
+                            ['#','[',']','#'],
+                            ['#','@','.','#'],
+                            ['#','.','.','#'],
+                            ['#','#','#','#']]
+
+        result = solution_2(upgrid, moves)
+        self.assertEqual(final_should_be, upgrid)
+
+    def test_solution2_result_on_customexample2(self):
+        upgrid = [ ['#','#','#','#'],
+                   ['#','.','.','#'],
+                   ['#','[',']','#'],
+                   ['#','[',']','#'],
+                   ['#','.','@','#'],
+                   ['#','#','#','#']]
+        moves = '^^'
+        final_should_be = [ ['#','#','#', '#'],
+                            ['#','[',']','#'],
+                            ['#','[',']','#'],
+                            ['#','.','@','#'],
+                            ['#','.','.','#'],
+                            ['#','#','#','#']]
+
+        result = solution_2(upgrid, moves)
+        self.assertEqual(final_should_be, upgrid)
+
+    def test_solution2_result_on_customexample3(self):
+        upgrid = [ ['#','#','#','#'],
+                   ['#','.','@','#'],
+                   ['#','[',']','#'],
+                   ['#','[',']','#'],
+                   ['#','.','.','#'],
+                   ['#','#','#','#']]
+        moves = 'vv'
+        final_should_be = [ ['#','#','#', '#'],
+                            ['#','.','.','#'],
+                            ['#','.','@','#'],
+                            ['#','[',']','#'],
+                            ['#','[',']','#'],
+                            ['#','#','#','#']]
+
+        result = solution_2(upgrid, moves)
+        self.assertEqual(final_should_be, upgrid)
+
+    def test_solution2_result_on_customexample5(self):
+        upgrid = [ ['#','#','#','#','#','#'],
+                   ['#','@','.','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','.','[',']','.','#'],
+                   ['#','.','.','[',']','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','#','#','#','#','#']]
+        moves = 'vvvvv'
+        finall = [ ['#','#','#','#','#','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','@','.','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','.','[',']','.','#'],
+                   ['#','.','.','[',']','#'],
+                   ['#','#','#','#','#','#']]
+        result = solution_2(upgrid, moves)
+        self.assertEqual(finall, upgrid)
+
+    def test_solution2_result_on_customexample5(self):
+        upgrid = [ ['#','#','#','#','#','#'],
+                   ['#','@','.','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','.','[',']','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','.','[',']','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','#','#','#','#','#']]
+        moves = 'vvvvv'
+        finall = [ ['#','#','#','#','#','#'],
+                   ['#','.','.','.','.','#'],
+                   ['#','@','.','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','.','[',']','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','.','[',']','.','#'],
+                   ['#','[',']','.','.','#'],
+                   ['#','#','#','#','#','#']]
+        result = solution_2(upgrid, moves)
+        self.assertEqual(finall, upgrid)
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
