@@ -147,44 +147,69 @@ def solution_2(grid, moves):
                         return start
             q = new_q
 
-        r, c = start
-        grid[r][c] = '.'
-        nr = r + dr
-        q = collections.deque()
-        if grid[nr][c] == '[':
-            grid[r][c] = '@'
-            grid[r][c+1] = '.'
-            q.append((nr, c, '['))
-            q.append((nr, c + 1, ']'))
-        elif grid[nr][c] == ']':
-            grid[r][c-1] = '.'
-            grid[r][c] = '@'
-            q.append((nr, c - 1, '['))
-            q.append((nr, c, ']'))
-
+        q = set()
+        all = set()
+        q.add( (start[0], start[1], '@') )
         while q:
+            all = all.union(q)
+            # new_q = collections.deque()
+            new_q = set()
             lq = len(q)
-            if lq == 2:
-                r, c0, prev0 = q.popleft()
-                r, c1, prev1 = q.popleft()
+            for _ in range(lq):
+                r, c, bracket = q.pop()
+                if grid[r][c] != '.' and grid[r][c] != '#':
+                    r += dr
+                    if grid[r][c] == '[':
+                        new_q.add((r, c, '['))
+                        new_q.add((r, c + 1, ']'))
+                    elif grid[r][c] == ']':
+                        new_q.add((r, c - 1, '['))
+                        new_q.add((r, c, ']'))
+            q = new_q
 
-                cur0 = grid[r][c0]
-                cur1 = grid[r][c1]
-                grid[r][c0] = prev0
-                grid[r][c1] = prev1
+        for r, c, bracket in all:
+            grid[r][c] = '.'
+        for r, c, bracket in all:
+            grid[r + dr][c] = bracket
 
-                prev0 = cur0
-                prev1 = cur1
-
-                nr = r + dr
-                if grid[nr][c0] == '[' and grid[nr][c1] == ']':
-                    q.append((nr, c0, '['))
-                    q.append((nr, c1, ']'))
-                elif grid[nr][c0] == ']' and grid[nr][c1] == '[':
-                    q.append((nr, c0, '['))
-                    q.append((nr, c1, ']'))
-
-
+        # r, c = start
+        # grid[r][c] = '.'
+        # nr = r + dr
+        # q = collections.deque()
+        # if grid[nr][c] == '[':
+        #     grid[r][c] = '@'
+        #     grid[r][c+1] = '.'
+        #     q.append((nr, c, '['))
+        #     q.append((nr, c + 1, ']'))
+        # elif grid[nr][c] == ']':
+        #     grid[r][c-1] = '.'
+        #     grid[r][c] = '@'
+        #     q.append((nr, c - 1, '['))
+        #     q.append((nr, c, ']'))
+        #
+        # while q:
+        #     lq = len(q)
+        #     if lq == 2:
+        #         r, c0, prev0 = q.popleft()
+        #         r, c1, prev1 = q.popleft()
+        #
+        #         cur0 = grid[r][c0]
+        #         cur1 = grid[r][c1]
+        #         grid[r][c0] = prev0
+        #         grid[r][c1] = prev1
+        #
+        #         prev0 = cur0
+        #         prev1 = cur1
+        #
+        #         nr = r + dr
+        #         if grid[nr][c0] == '[' and grid[nr][c1] == ']':
+        #             q.append((nr, c0, '['))
+        #             q.append((nr, c1, ']'))
+        #         elif grid[nr][c0] == ']' and grid[nr][c1] == '[':
+        #             q.append((nr, c0, '['))
+        #             q.append((nr, c1, ']'))
+        #
+        #
 
         return start[0] + dr, start[1]
 
@@ -192,11 +217,11 @@ def solution_2(grid, moves):
     print()
     start = get_start(grid)
     for i, move in enumerate(moves):
-        if i >= 14086:
-            print_grid(grid)
-        if is_error(grid):
-            print(f'error at: {i}')
-            return None
+        # if i >= 14086:
+        #     print_grid(grid)
+        # if is_error(grid):
+        #     print(f'error at: {i}')
+        #     return None
         if move == '<' or move == '>':
             start = push_h(move, start)
         elif move == 'v' or move == '^':
