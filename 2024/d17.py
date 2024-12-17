@@ -1,6 +1,16 @@
 from timeit import default_timer as timer
 import re
 
+#Program:
+# 2,4: bst : B <- A % 8     : B in 0 thru 7
+# 1,6: bxl : B <- B ^ 110   : B in 0 thru 7
+# 7,5: cdv : C <- A // 2**B : C = A // (1 thru 128) so just increment C?
+# 4,4: bxc : B <- B ^ C     : in same range as C now.  (nearest C?)
+# 1,7: bxl : B <- B ^ 111   : in same range as C still (nearest 7?)
+# 0,3: adv : A <- A // 2**3 : A // 8
+# 5,5: out : B % 8          : output.append(B % 8)
+# 3,0: jnz : end if A == 0 else goto 0
+
 class Debugger:
     def __init__(self, a, b, c, program):
         self.a = a
@@ -107,7 +117,7 @@ class Debugger:
         self.c = numerator // denominator
         self.ip += 2
 
-    def run(self):
+    def run(self, solution_2=False):
         opcode_to_func = [
             self.adv,
             self.bxl,
@@ -123,6 +133,8 @@ class Debugger:
             operand = self.program[self.ip + 1]
             func = opcode_to_func[opcode]
             func(operand)
+            if solution_2 and len(self.output_data) > len(self.program):
+                break
 
 def parse_input(filename):
     with open(filename, 'r', encoding="UTF-8") as f:
@@ -148,16 +160,26 @@ def solution_1(db):
     return db.get_output()
 
 def solution_2(puzzle_input):
-    i = 0
-    while True:
-        print(i)
-        db = parse_input(puzzle_input)
-        db.a = i
-        db.run()
-        if db.output_data == db.program:
-            return i
-        i += 1
-    return -1
+    oct = []
+    def backtrack(i):
+        if i == 16:
+            return True
+        for j in range(8):
+            oct.append(j)
+            db = parse_input(puzzle_input)
+            db.a = int(''.join([str(x) for x in oct]), 8)
+            db.run()
+            print(db.get_output())
+            check = db.program[::-1][:i+1]
+            if db.output_data[::-1] == check:
+                if backtrack(i + 1):
+                    return True
+                print(db.get_output()[:i])
+                print(int(''.join([str(x) for x in oct]), 8))
+            oct.pop()
+    backtrack(0)
+    print(int(''.join([str(x) for x in oct]), 8))
+    return int(''.join([str(x) for x in oct]), 8)
 
 if __name__ == "__main__":
     # start = timer()
@@ -167,10 +189,16 @@ if __name__ == "__main__":
     # print( f"{( end - start ) * 1000}ms" )
     # print(f'Solution1: {result}')
 
+    # start = timer()
+    # result = solution_2("puzzle_input//d17_input_ex2.txt")
+    # end = timer()
+    # print( f"{( end - start ) * 1000}ms" )
+    # print(f'Solution2: {result}')
+
     start = timer()
     result = solution_2("puzzle_input//d17_input.txt")
     end = timer()
     print( f"{( end - start ) * 1000}ms" )
-    print(f'Solution1: {result}')
+    print(f'Solution2: {result}')
 
 
