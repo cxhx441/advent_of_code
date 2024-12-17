@@ -29,63 +29,93 @@ def solution_1(maze):
     ROWS, COLS = len(maze), len(maze[0])
 
     position = get_position(maze, 'S')
-    dp = [ [float("inf")] * COLS for _ in range(ROWS) ]
+    dp = []
+    for r in range(ROWS):
+        row = []
+        for c in range(COLS):
+            row.append(
+                {
+                    'E': float("inf"),
+                    'S': float("inf"),
+                    'W': float("inf"),
+                    'N': float("inf")
+                 }
+            )
+        dp.append(row)
     total = 0
     direction = 'E'
-    h = [(total, position[0], position[1], direction)]
+    h = [(total, *position, direction)]
     while h:
-        cur_tot, r, c, cur_dir = heapq.heappop(h)
+        cur_tot, r, c, d = heapq.heappop(h)
         if not ( 0 <= r < ROWS and 0 <= c < COLS ) or maze[r][c] == '#':
             continue
 
-        if cur_tot >= dp[r][c]:
+        if cur_tot >= dp[r][c][d]:
             continue
 
-        dp[r][c] = cur_tot
+        dp[r][c][d] = cur_tot
         for dir in directions:
             nr, nc = r + directions[dir][0], c + directions[dir][1]
-            if dir == cur_dir:
+            if dir == d:
                 heapq.heappush(h, (cur_tot + 1, nr, nc, dir) )
             else:
                 heapq.heappush(h, (cur_tot + 1001, nr, nc, dir) )
 
     end = get_position(maze, 'E')
 
-    return dp[end[0]][end[1]]
+    return min(dp[end[0]][end[1]].values())
 
 
 def solution_2(maze):
     ROWS, COLS = len(maze), len(maze[0])
     start = get_position(maze, 'S')
-    dp = [ [float("inf")] * COLS for _ in range(ROWS) ]
+    dp = []
+    for r in range(ROWS):
+        row = []
+        for c in range(COLS):
+            row.append(
+                {
+                    'E': [ float("inf"), set() ],
+                    'S': [ float("inf"), set() ],
+                    'W': [ float("inf"), set() ],
+                    'N': [ float("inf"), set() ],
+                }
+            )
+        dp.append(row)
     total = 0
     direction = 'E'
-    best = float("inf")
-    best_seats = []
-    h = [(total, start[0], start[1], direction, [start])]
+    h = [ ( total, *start, direction, {start} ) ]
+    best_seats = set()
+    best_time = float("inf")
     while h:
-        cur_tot, r, c, cur_dir, path = heapq.heappop(h)
+        cur_tot, r, c, d, path = heapq.heappop(h)
         if not ( 0 <= r < ROWS and 0 <= c < COLS ) or maze[r][c] == '#':
             continue
 
-        if cur_tot > best:
+        if maze[r][c] == 'E' and cur_tot <= best_time:
+            if cur_tot < best_time:
+                best_time = cur_tot
+                best_seats = path.copy()
+            elif cur_tot == best_time:
+                best_seats = best_seats.union(path)
+
+        if cur_tot > dp[r][c][d][0]:
             continue
-        dp[r][c] = cur_tot
 
-        if cur_tot <= best  and maze[r][c] == 'E':
-            best = cur_tot
-            best_seats += path
-
+        dp[r][c][d][1].add((r, c))
+        dp[r][c][d][0] = cur_tot
         for dir in directions:
             nr, nc = r + directions[dir][0], c + directions[dir][1]
-            if dir == cur_dir:
-                heapq.heappush(h, (cur_tot + 1, nr, nc, dir, path + [(nr, nc)]) )
+            if dir == d:
+                heapq.heappush(h, (cur_tot + 1, nr, nc, dir, path.union( {(nr, nc)} ) ) )
             else:
-                heapq.heappush(h, (cur_tot + 1001, nr, nc, dir, path + [(nr, nc)]) )
+                heapq.heappush(h, (cur_tot + 1001, nr, nc, dir, path.union( {(nr, nc)} ) ) )
 
-    # print(tabulate(dp))
-    print(best, len(set(best_seats)))
-    return len(set(best_seats))
+    end = get_position(maze, 'E')
+
+    # return min(dp[end[0]][end[1]].values())
+    # return best_time, best_seats, len(best_seats)
+    return len(best_seats)
 
 if __name__ == "__main__":
     pass
@@ -99,7 +129,7 @@ if __name__ == "__main__":
 
     start = timer()
     maze = parse_input("puzzle_input//d16_input.txt")
-    result_2 = solution_2(maze, solution_1(maze))
+    result_2 = solution_2(maze)
     end = timer()
     print( f"{( end - start ) * 1000}ms" )
     print(f'Solution2: {result_2}')
