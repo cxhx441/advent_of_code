@@ -1,168 +1,75 @@
 from timeit import default_timer as timer
-import heapq
+import collections
 
 def parse_input(filename):
     with open(filename, 'r', encoding="UTF-8") as f:
-        data = f.read().strip()
-        available, desired = data.split('\n\n')
-        available = available.split(', ')
-        desired = desired.split('\n')
-    return available, desired
+        racetrack = []
+        for line in f:
+            row = [ch for ch in line.strip()]
+            racetrack.append(row)
+    return racetrack
 
-def solution_1(available, desired):
-    available = set(available)
-    possible = 0
+def get_start(racetrack):
+    ROWS, COLS = len(racetrack), len(racetrack[0])
+    for r in range(ROWS):
+        for c in range(COLS):
+            if racetrack[r][c] == 'S':
+                return r, c
 
-    def backtrack(first, d):
-        if first == len(d):
-            return True
+def best_wo_cheats(racetrack):
+    start = get_start(racetrack)
+    q = collections.deque([(*start, 0, [])])
+    seen = set()
+    while q:
+        r, c, ps, path = q.popleft()
+        if racetrack[r][c] == '#' or (r, c) in seen:
+            continue
 
-        for i in range(1, len(d) - first + 1):
-            cur = d[first : first + i]
-            if cur not in available:
-                continue
-            if backtrack(first + i, d):
-                return True
+        seen.add((r, c))
+        if racetrack[r][c] == 'E':
+            return ps, path[:-1]
+        for dr, dc in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            q.append( (nr, nc, ps + 1, path + [(nr, nc)]) )
 
-        return False
+def best_w_cheats(racetrack):
+    start = get_start(racetrack)
+    q = collections.deque([(*start, 0, False)])
+    seen = set()
+    while q:
+        r, c, ps = q.popleft()
+        if racetrack[r][c] == '#' or (r, c) in seen:
+            continue
 
-    for d in desired:
-        if backtrack(0, d):
-            possible += 1
-    return possible
-
-
-# def solution_2(available, desired):
-#     # dp = {pattern : ways_to_create}
-#
-#     desired = {d: 0 for d in desired}
-#     # available = set(available)
-#     max_len_d = max(len(d) for d in desired)
-#
-#     def backtrack(path, n):
-#         print(path)
-#         if n > max_len_d:
-#             return
-#
-#         w = ''.join(path)
-#         if w in desired:
-#             desired[w] += 1
-#
-#         for a in available:
-#             n += len(a)
-#             path.append(a)
-#             backtrack(path, n)
-#             n -= len(a)
-#             path.pop()
-#
-#         return False
-#
-#     backtrack([], 0)
-#     return sum(desired.values())
+        seen.add((r, c))
+        if racetrack[r][c] == 'E':
+            return ps
+        for dr, dc in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
+            nr, nc = r + dr, c + dc
+            q.append( (nr, nc, ps + 1) )
 
 
-def solution_2(available, desired):
-    memo = {}
-    def backtrack(prefix):
-        if prefix == '':
-            return 1
-
-        if prefix in memo:
-            return memo[prefix]
-
-        count = 0
-        for a in available:
-            if prefix.startswith(a):
-                count += backtrack(prefix[len(a):])
-        memo[prefix] = count
-        return count
-
-    total = 0
-    for d in desired:
-        total += backtrack(d)
-    return total
+def solution_1(racetrack):
+    stnd = best_wo_cheats(racetrack)
+    return stnd
+    # savings = find_best_with_cheats(racetrack, start, stnd)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # def backtrack(target):
-    #     if not target:
-    #         return 1
-    #
-    #     if target in memo:
-    #         return memo[target]
-    #
-    #     these_ways = 0
-    #     for s in available:
-    #         if target.startswith(s):
-    #             these_ways += backtrack(target[len(s):])
-    #     memo[target] = these_ways
-    #     return these_ways
-    #
-    # memo = dict()
-    # total_ways = 0
-    # for d in desired:
-    #     print(d)
-    #     total_ways += backtrack(d)
-    # return total_ways
-    #
-
-    # available = set(available)
-    # possible = 0
-    # max_len_d = max(len(d) for d in desired)
-    #
-    # def backtrack(first, d, path):
-    #     w = ''.join(path)
-    #     if len(w) > max_len_d:
-    #         return
-    #     if len(w) == lend
-    #     nonlocal possible
-    #     if first == len(d):
-    #         print(possible)
-    #         possible += 1
-    #
-    #     for i in range(1, len(d) - first + 1):
-    #         cur = d[first : first + i]
-    #         if cur not in available:
-    #             continue
-    #         if backtrack(first + i, d):
-    #             return True
-    #
-    #     return False
-    #
-    # for i, d in enumerate(desired):
-    #     print(i, len(d))
-    #     backtrack(0, d)
-    # return possible
+def solution_2(racetrack):
+    pass
 
 if __name__ == "__main__":
-    # start = timer()
-    # available, desired = parse_input("puzzle_input/d19_input.txt")
-    # result = solution_1(available, desired)
-    # end = timer()
-    # print( f"{( end - start ) * 1000}ms" )
-    # print(f'Solution1: {result}')
-
     start = timer()
-    available, desired = parse_input("puzzle_input/d19_input.txt")
-    result = solution_2(available, desired)
+    racetrack = parse_input("puzzle_input/d20_input.txt")
+    result = solution_1(racetrack)
     end = timer()
     print( f"{( end - start ) * 1000}ms" )
     print(f'Solution1: {result}')
+
+    # start = timer()
+    # available, desired = parse_input("puzzle_input/d20_input.txt")
+    # result = solution_2(available, desired)
+    # end = timer()
+    # print( f"{( end - start ) * 1000}ms" )
+    # print(f'Solution1: {result}')
 
