@@ -1,6 +1,6 @@
 import unittest
 
-from d20 import *
+from d21 import *
 
 class SolutionTest(unittest.TestCase):
     # def test_input_parsing_on_example1(self):
