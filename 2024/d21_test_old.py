@@ -15,18 +15,22 @@ class SolutionTest(unittest.TestCase):
         A_r1 = '<A^A>^^AvvvA'
         A_k = '029A'
 
-        #
-        # for i, ch in enumerate(A_h):
-        #     dpad_R0.send(ch)
-        # self.assertEqual( ''.join(dpad_R0.pressed_keys), A_r0 )
-        #
-        # for ch in dpad_R0.pressed_keys:
-        #     dpad_R1.send(ch)
-        # self.assertEqual( ''.join(dpad_R1.pressed_keys), A_r1 )
-        #
-        # for ch in dpad_R1.pressed_keys:
-        #     keypad.send(ch)
-        # self.assertEqual( ''.join(keypad.pressed_keys), A_k )
+        dpad_R0 = Dpad()
+        dpad_R1 = Dpad()
+        keypad = Keypad()
+
+
+        for i, ch in enumerate(A_h):
+            dpad_R0.send(ch)
+        self.assertEqual( ''.join(dpad_R0.pressed_keys), A_r0 )
+
+        for ch in dpad_R0.pressed_keys:
+            dpad_R1.send(ch)
+        self.assertEqual( ''.join(dpad_R1.pressed_keys), A_r1 )
+
+        for ch in dpad_R1.pressed_keys:
+            keypad.send(ch)
+        self.assertEqual( ''.join(keypad.pressed_keys), A_k )
 
     def test_solution1_parsing_on_example1(self):
         codes = parse_input("puzzle_input/d21_input_ex1.txt")
