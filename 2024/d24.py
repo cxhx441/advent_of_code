@@ -73,7 +73,7 @@ def solution_1(nodes, ngc):
     while q:
         cur = q.popleft()
 
-        solve(cur, nodes, ngc)
+        x = solve(cur, nodes, ngc)
         for nei in edges[cur]:
             in_degrees[nei].remove(cur)
             if len(in_degrees[nei]) == 0:
