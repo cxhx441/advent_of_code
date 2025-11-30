@@ -51,11 +51,6 @@ def solution_1(diskmap):
 
     return checksum(compressed)
 
-# diskmap = parse_input("2024//puzzle_input//d9_input_ex.txt")
-# result_1 = solution_1(diskmap)
-# print(result_1)
-# assert result_1 == 1928
-
 # start = timer()
 # diskmap = parse_input("2024//puzzle_input//d9_input.txt")
 # result = solution_1(diskmap)
@@ -100,18 +95,6 @@ def solution_2(diskmap):
             freespace_begin_location += diskmap[i + 1]
             i += 2
 
-        # freespace_begin_location = 0
-        # i = 0
-        # while i < len(diskmap) - 1:
-        #     freespace_begin_location += diskmap[i]
-        #     size = diskmap[i + 1]
-        #     freespace_dict[size].append(freespace_begin_location)
-        #     freespace_begin_location += diskmap[i + 1]
-        #     i += 2
-
-        # for size, locations in freespace_dict.items():
-        #     locations.reverse()
-
         return freespace_mp
 
     def compress(data):
@@ -120,7 +103,6 @@ def solution_2(diskmap):
         while r >= 0:
             while r >= 0 and data[r] is None:
                 r -= 1
-            # filenum = data[r]
             start = end = r
             while data[start - 1] == data[end]:
                 start -= 1
@@ -161,16 +143,11 @@ def solution_2(diskmap):
 
     return checksum(compressed)
 
-diskmap = parse_input("2024//puzzle_input//d9_input_ex.txt")
-result_2 = solution_2(diskmap)
-print(result_2)
-assert result_2 == 2858
-
-start = timer()
-input = parse_input("2024//puzzle_input//d9_input.txt")
-result_2 = solution_2(input)
-print(result_2)
-end = timer()
-print( f"{( end - start ) * 1000}ms" )
-print(result_2)
+# start = timer()
+# input = parse_input("2024//puzzle_input//d9_input.txt")
+# result_2 = solution_2(input)
+# print(result_2)
+# end = timer()
+# print( f"{( end - start ) * 1000}ms" )
+# print(result_2)
 
