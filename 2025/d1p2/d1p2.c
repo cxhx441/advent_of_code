@@ -11,7 +11,7 @@ typedef struct {
 
 int main(void) {
     // const char *fname = "d1p2_example.txt";
-    const char *fname = "d1p2_input.txt";
+    const char *fname = "../puzzle_input/d1p2_input.txt";
 
     FILE *fp = fopen(fname, "r");
     if (!fp) {

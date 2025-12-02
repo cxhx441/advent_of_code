@@ -1,3 +1,5 @@
 \venv
 tasks.json
 *.out
+*.dSYM
+\bin
