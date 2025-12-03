@@ -5,7 +5,15 @@
 
 #define MAX_LINES 1024
 #define MAX_LINE_LEN 256
-#define MAX_BATTERIES 12
+#define MAX_BATTERIES 2
+
+long power10(int n){
+    long result = 1;
+    while (n--){
+        result *= 10;
+    }
+    return result;
+}
 
 long recurse(char *bank, int start, int place, int mbatteries){
     if (place == -1){
@@ -20,13 +28,13 @@ long recurse(char *bank, int start, int place, int mbatteries){
         }
     }
 
-    long val = ( max * pow(10, place) ) + recurse(bank, maxi + 1, place - 1, mbatteries);
+    long val = max * power10(place) + recurse(bank, maxi + 1, place - 1, mbatteries);
     return val;
 }
 
 int main(void){
-    // const char *fname = "./puzzle_input/d3p1_example.txt";
-    const char *fname = "./puzzle_input/d3p1_input.txt";
+    const char *fname = "./puzzle_input/d3p1_example.txt";
+    // const char *fname = "./puzzle_input/d3p1_input.txt";
     FILE *fp = fopen(fname, "r");
     if (fp == NULL){
         perror("file not valid");
