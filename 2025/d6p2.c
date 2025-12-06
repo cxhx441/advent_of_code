@@ -80,24 +80,6 @@ int main(void){
     }
     result += cur;
 
-    // long cur;
-    // for (int j = 0; j < ncols; j++){
-    //     if (operators[j] == '+')
-    //         cur = 0;
-    //     else if (operators[j] == '*')
-    //         cur = 1;
-
-    //     for (int i = 0; i < MAX_ROWS; i++){
-    //         if (operators[j] == '+'){
-    //             cur += problems[i][j];
-    //         }
-    //         else if (operators[j] == '*'){
-    //             cur *= problems[i][j];
-    //         }
-    //     }
-    //     result += cur;
-    // }
-
     printf("%lu\n", result);
     return EXIT_SUCCESS;
 }
