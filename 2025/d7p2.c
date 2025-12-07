@@ -46,6 +46,10 @@ int main(void){
     for (int i=0; i < m;i++){
         grid_count[i] = malloc(n * sizeof(long));
         if (grid_count[i] == NULL){
+            for ( int j = 0; j < i; j++ ){
+                free(grid_count[i]);
+            }
+            free(grid_count);
             perror("error on malloc");
             return EXIT_FAILURE;
         }
