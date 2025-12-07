@@ -2,18 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FNAME "./puzzle_input/d6p1_input.txt"
-#define MAX_ROWS 5
+// #define FNAME "./puzzle_input/d6p1_input.txt"
+// #define MAX_ROWS 5
 #define MAX_PROBLEMS 4096
-// #define FNAME "./puzzle_input/d6p1_example.txt"
-// #define MAX_ROWS 4
+#define FNAME "./puzzle_input/d6p1_example.txt"
+#define MAX_ROWS 4
 
-char input[MAX_ROWS][MAX_PROBLEMS];
+char *rows[MAX_ROWS];
 
 int all_blank(int i){
     char cur;
     for (int row = 0; row < MAX_ROWS; row++ ) {
-        cur = input[row][i];
+        cur = rows[row][i];
         if ( cur != ' ' && cur != '\0')
             return 0;
     }
@@ -23,11 +23,11 @@ int all_blank(int i){
 int build_num(int i){
     int cur = 0;
     for (int row = 0; row < MAX_ROWS - 1; row++ ) {
-        if ( input[row][i] == ' ' || input[row][i] == '\0'){
+        if ( rows[row][i] == ' ' || rows[row][i] == '\0'){
             continue;
         }
         cur *= 10;
-        cur += input[row][i] - '0';
+        cur += rows[row][i] - '0';
     }
     return cur;
 }
@@ -43,12 +43,24 @@ int main(void){
 
     /* process input */
     int n = 0;
+    size_t len;
+    size_t line_len;
     for (int i = 0; i < MAX_ROWS; i++){
-        fgets(input[i], sizeof (input[i]), fp);
-        input[i][strcspn(input[i], "\n")] = '\0';
-        if (strlen(input[i]) > n){
-            n = strlen(input[i]);
+        rows[i] = NULL;
+        len = 0;
+        if ( (line_len = getline(&rows[i], &len, fp)) < 0 ) {
+            perror("getline failed");
+            return EXIT_FAILURE;
         }
+
+        if ( rows[i][line_len-1] == '\n' ) {
+            rows[i][line_len-1] = '\0';
+            line_len--;
+        }
+
+        if ( line_len > n )
+            n = line_len;
+
     }
 
     int new = 1;
@@ -62,7 +74,7 @@ int main(void){
         }
 
         if ( new == 1 ) {
-            operator = input[MAX_ROWS - 1][i];
+            operator = rows[MAX_ROWS - 1][i];
             new = 0;
             result += cur;
             if ( operator == '*' )
