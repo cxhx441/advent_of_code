@@ -3,3 +3,4 @@ tasks.json
 *.out
 *.dSYM
 \bin
+*.exe
