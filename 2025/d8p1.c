@@ -1,0 +1,190 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define TESTING
+#ifdef TESTING
+    char* const fname = "./puzzle_input/d8p1_example.txt";
+    #define NPAIRS_TARGET 10
+#else
+    char* const fname = "./puzzle_input/d8p1_input.txt";
+    #define NPAIRS_TARGET 1000
+#endif
+
+#define MIN_LINE_LEN 64
+#define CAPACITY 1
+
+typedef struct{
+    int x;
+    int y;
+    int z;
+} Coordinate;
+
+typedef struct{
+    int a;
+    int b;
+    double len;
+} Edge;
+
+int edgecmp(const void *a, const void *b){
+    Edge *e1 = (Edge*) a;
+    Edge *e2 = (Edge*) b;
+
+    if ( e1->len < e2->len )
+        return -1;
+    else if (e1->len > e2->len)
+        return 1;
+    else
+        return 0;
+}
+
+int ufcmp(const void *a, const void *b){
+    int ai = *(int*)a;
+    int bi = *(int*)b;
+
+    if ( ai < bi )
+        return -1;
+    else if (ai > bi)
+        return 1;
+    else
+        return 0;
+}
+
+int get_parent(int* uf, int i){
+    if (uf[i] < 0)
+        return i;
+    return uf[i] = get_parent(uf, uf[i]);
+    // int cur = i;
+    // // relaxation...
+    // while ( uf[cur] >= 0 ){
+    //     cur = uf[cur];
+    // }
+    // int parent = cur;
+    // return parent;
+}
+
+void union_edge(int *uf, int a, int b, int parent_a, int parent_b){
+    int rank_a = -uf[parent_a];
+    int rank_b = -uf[parent_b];
+    int rank_ab = rank_a + rank_b;
+
+    if ( rank_a >= rank_b ){
+        uf[parent_a] = -1 * rank_ab;
+        uf[parent_b] = parent_a;
+    }
+    else {
+        uf[parent_b] = -1 * rank_ab;
+        uf[parent_a] = parent_b;
+    }
+    return;
+}
+
+int main(void){
+
+    FILE *fp = fopen(fname, "r");
+    if (fp == NULL){
+        perror("file not found.");
+        return EXIT_FAILURE;
+    }
+
+    int capacity = CAPACITY;
+    int nboxes = 0;
+    Coordinate *junction_boxes = malloc(capacity * sizeof (Coordinate));
+
+    char buf[MIN_LINE_LEN];
+    while ( fgets(buf, sizeof (buf), fp) != NULL ){
+        Coordinate new_coord;
+        sscanf(buf, "%d,%d,%d", &new_coord.x, &new_coord.y, &new_coord.z);
+        if (nboxes == capacity){
+            capacity *= 2;
+            junction_boxes = realloc(junction_boxes, capacity * sizeof (Coordinate));
+            if ( junction_boxes == NULL ){
+                perror("fail reallocation");
+                return EXIT_FAILURE;
+            }
+
+        }
+        junction_boxes[nboxes++] = new_coord;
+        // printf("%d: %d,%d,%d\n", size-1, junction_boxes[size-1].x, junction_boxes[size-1].y, junction_boxes[size-1].z);
+    }
+    fclose(fp);
+
+    // for (int i = 0; i < nboxes; i++){
+    //     printf("%d: %d,%d,%d\n", i, junction_boxes[i].x, junction_boxes[i].y, junction_boxes[i].z);
+    // }
+
+    // create edges
+    int nedges = ( nboxes * (nboxes - 1) ) / 2;
+    Edge* edges = malloc(nedges * sizeof (Edge) );
+    int i = 0;
+    for (int a = 0; a < nboxes; a++) {
+        for ( int b = a + 1; b < nboxes; b++ ){
+            edges[i].a = a;
+            edges[i].b = b;
+
+            Coordinate n1 = junction_boxes[a];
+            Coordinate n2 = junction_boxes[b];
+            edges[i].len = sqrt(
+                pow(n1.x - n2.x, 2) +
+                pow(n1.y - n2.y, 2) +
+                pow(n1.z - n2.z, 2)
+            );
+            i++;
+        }
+    }
+
+    // sort the edges
+    qsort(edges, nedges, sizeof (Edge), edgecmp);
+
+    // connect w unionfind
+    int* uf = malloc(nboxes * sizeof (int) );
+    for ( int i = 0; i < nboxes; i++)
+        uf[i] = -1;
+    int npairs = 0;
+    int edge_idx = 0;
+    while ( npairs < NPAIRS_TARGET){
+        Edge e = edges[edge_idx++];
+        // if (e.a == e.b){
+        //     continue;
+        // }
+        // find
+        // printf("%d,%d,%d\n", junction_boxes[e.a].x, junction_boxes[e.a].y, junction_boxes[e.a].z);
+        // printf("%d,%d,%d\n", junction_boxes[e.b].x, junction_boxes[e.b].y, junction_boxes[e.b].z);
+        int parent_a = get_parent(uf, e.a);
+        int parent_b = get_parent(uf, e.b);
+        if ( parent_a == parent_b ){
+            // printf("same_parent!\n");
+            continue;
+        }
+
+        // union
+        union_edge(uf, e.a, e.b, parent_a, parent_b);
+        // printf("%d: unioned\n", npairs+1);
+        // for (int i = 0; i < nboxes; i++){
+        //     printf("%d, ", uf[i]);
+        // }
+        // printf("\n");
+        npairs++;
+    }
+
+    int result = 1;
+    for ( int i = 0; i < nboxes; i++){
+        if ( uf[i] < 0 ){
+            result *= (-1 * uf[i]);
+        }
+    }
+    printf("%d\n", result);
+
+    // for (int i = 0; i < nboxes; i++){
+    //     printf("%d, ", uf[i]);
+    // }
+    // printf("\n");
+
+    qsort(uf, nboxes, sizeof (int), ufcmp);
+    for (int i = 0; i < nboxes; i++){
+        printf("%d, ", uf[i]);
+    }
+    printf("\n");
+    printf("%d*%d*%d = %d\n", -uf[0], -uf[1], -uf[2], -uf[0]*-uf[1]*-uf[2]);
+    return EXIT_SUCCESS;
+}
