@@ -53,13 +53,34 @@ int ufcmp(const void *a, const void *b){
 int get_parent(int* uf, int i){
     if (uf[i] < 0)
         return i;
-    // return uf[i] = get_parent(uf, uf[i]);
+    // return uf[i] = get_parent(uf, uf[i]); avoiding recursion.
     int cur = i;
-    // relaxation...
+    // compression...
+    // implement a dynamic stack to track seen and compress.
+    int seen_capacity = 1;
+    int* seen_stack = malloc(sizeof(int) * seen_capacity);
+    int seen_count = 0;
+
     while ( uf[cur] >= 0 ){
+
+        if ( seen_count == seen_capacity ){
+            seen_capacity *= 2;
+            seen_stack = realloc(seen_stack, sizeof(int) * seen_capacity);
+            if ( seen_stack == NULL ){
+                perror("failled realloc on seen_stack");
+                return EXIT_FAILURE;
+            }
+        }
+
+        seen_stack[seen_count++] = cur;
         cur = uf[cur];
     }
+
     int parent = cur;
+    for ( int i = 0; i < seen_count; i++ ){
+        uf[seen_stack[i]] = parent;
+    }
+
     return parent;
 }
 
