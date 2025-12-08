@@ -5,10 +5,10 @@
 // #define TESTING
 #ifdef TESTING
     char* const fname = "./puzzle_input/d8p1_example.txt";
-    #define NPAIRS_TARGET 10
+    // #define NPAIRS_TARGET 10
 #else
     char* const fname = "./puzzle_input/d8p1_input.txt";
-    #define NPAIRS_TARGET 1000
+    // #define NPAIRS_TARGET 1000
 #endif
 
 #define MIN_LINE_LEN 64
@@ -63,7 +63,7 @@ int get_parent(int* uf, int i){
     return parent;
 }
 
-void union_edge(int *uf, int a, int b, int parent_a, int parent_b){
+int union_edge(int *uf, int a, int b, int parent_a, int parent_b){
     int rank_a = -uf[parent_a];
     int rank_b = -uf[parent_b];
     int rank_ab = rank_a + rank_b;
@@ -76,7 +76,7 @@ void union_edge(int *uf, int a, int b, int parent_a, int parent_b){
         uf[parent_b] = -1 * rank_ab;
         uf[parent_a] = parent_b;
     }
-    return;
+    return rank_ab;
 }
 
 int main(void){
@@ -140,11 +140,16 @@ int main(void){
     int* uf = malloc(nboxes * sizeof (int) );
     for ( int i = 0; i < nboxes; i++)
         uf[i] = -1;
-    int npairs = 0;
+    int merged = 0;
     int edge_idx = 0;
-    for (int looped = 0; looped < NPAIRS_TARGET; looped++){
-    // while ( npairs < NPAIRS_TARGET){
+    // for (int looped = 0; looped < NPAIRS_TARGET; looped++){
+    int last_a, last_b;
+    // while ( merged < 10 ){
+    while ( 1 ){
+        // merged++;
         Edge e = edges[edge_idx++];
+        last_a = e.a;
+        last_b = e.b;
         // if (e.a == e.b){
         //     continue;
         // }
@@ -159,33 +164,39 @@ int main(void){
         }
 
         // union
-        union_edge(uf, e.a, e.b, parent_a, parent_b);
+        if (union_edge(uf, e.a, e.b, parent_a, parent_b) == nboxes)
+            break;
         // printf("%d: unioned\n", npairs+1);
         // for (int i = 0; i < nboxes; i++){
         //     printf("%d, ", uf[i]);
         // }
         // printf("\n");
-        npairs++;
+        merged++;
     }
 
-    int result = 1;
-    for ( int i = 0; i < nboxes; i++){
-        if ( uf[i] < 0 ){
-            result *= (-1 * uf[i]);
-        }
-    }
-    printf("%d\n", result);
+    // int result = 1;
+    // for ( int i = 0; i < nboxes; i++){
+    //     if ( uf[i] < 0 ){
+    //         result *= (-1 * uf[i]);
+    //     }
+    // }
+    // printf("%d\n", result);
 
+    // // for (int i = 0; i < nboxes; i++){
+    // //     printf("%d, ", uf[i]);
+    // // }
+    // // printf("\n");
+
+    // qsort(uf, nboxes, sizeof (int), ufcmp);
     // for (int i = 0; i < nboxes; i++){
     //     printf("%d, ", uf[i]);
     // }
     // printf("\n");
+    // printf("%d*%d*%d = %d\n", -uf[0], -uf[1], -uf[2], -uf[0]*-uf[1]*-uf[2]);
 
-    qsort(uf, nboxes, sizeof (int), ufcmp);
-    for (int i = 0; i < nboxes; i++){
-        printf("%d, ", uf[i]);
-    }
-    printf("\n");
-    printf("%d*%d*%d = %d\n", -uf[0], -uf[1], -uf[2], -uf[0]*-uf[1]*-uf[2]);
+    printf("%d,%d,%d\n", junction_boxes[last_a].x, junction_boxes[last_a].y, junction_boxes[last_a].z);
+    printf("%d,%d,%d\n", junction_boxes[last_b].x, junction_boxes[last_b].y, junction_boxes[last_b].z);
+    printf("%lu\n", (long)junction_boxes[last_a].x * (long)junction_boxes[last_b].x);
+    printf("ok\n");
     return EXIT_SUCCESS;
 }
