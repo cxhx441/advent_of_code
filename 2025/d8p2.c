@@ -84,7 +84,9 @@ int get_parent(int* uf, int i){
     return parent;
 }
 
-int union_edge(int *uf, int a, int b, int parent_a, int parent_b){
+int union_edge(int *uf, int a, int b){
+    int parent_a = get_parent(uf, a);
+    int parent_b = get_parent(uf, b);
     int rank_a = -uf[parent_a];
     int rank_b = -uf[parent_b];
     int rank_ab = rank_a + rank_b;
@@ -185,7 +187,7 @@ int main(void){
         }
 
         // union
-        if (union_edge(uf, e.a, e.b, parent_a, parent_b) == nboxes)
+        if (union_edge(uf, e.a, e.b) == nboxes)
             break;
         // printf("%d: unioned\n", npairs+1);
         // for (int i = 0; i < nboxes; i++){
