@@ -62,6 +62,7 @@ int main(void){
             n = line_len;
 
     }
+    fclose(fp);
 
     int new = 1;
     long cur = 0;
@@ -92,6 +93,9 @@ int main(void){
     }
     result += cur;
 
+    for (int i = 0; i < MAX_ROWS; i++){
+        free(rows[i]);
+    }
     printf("%lu\n", result);
     return EXIT_SUCCESS;
 }

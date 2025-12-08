@@ -69,6 +69,7 @@ int main(void){
         // printf("%s\n", room[count]);
         count++;
     }
+    fclose(fp);
 
     m = count;
     n = strlen(room[0]);
@@ -78,6 +79,9 @@ int main(void){
         result += rolls_accessed;
     }
 
+    for (int i = 0; i < m; i++){
+        free(room[i]);
+    }
     printf("%d\n", result);
     return EXIT_SUCCESS;
 }

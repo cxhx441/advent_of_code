@@ -34,6 +34,8 @@ int main(void){
         grid[count] = strdup(line);
         count++;
     }
+    free(line);
+    fclose(fp);
 
 
     // for (int i = 0; i < count; i++){
@@ -69,6 +71,10 @@ int main(void){
         printf("%s\n", grid[i]);
     }
     printf("%d\n", nsplits);
+    for (int i = 0; i < m; i++){
+        free(grid[i]);
+    }
+    free(grid);
     // long result = 0;
     // printf("%lu\n", result);
     return EXIT_SUCCESS;

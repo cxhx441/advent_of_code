@@ -33,6 +33,8 @@ int main(void){
         grid[count] = strdup(line);
         count++;
     }
+    free(line);
+    fclose(fp);
 
 
     int m = count;
@@ -104,5 +106,13 @@ int main(void){
         result += grid_count[m-1][i];
     }
     printf("%lu\n", result);
+
+    for (int i = 0; i < m; i++){
+        free(grid[i]);
+        free(grid_count[i]);
+    }
+    free(grid);
+    free(grid_count);
+
     return EXIT_SUCCESS;
 }
