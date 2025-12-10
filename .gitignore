@@ -6,3 +6,4 @@ tasks.json
 *.exe
 !*.*
 *.dsYM
+tempCodeRunnerFile.py
