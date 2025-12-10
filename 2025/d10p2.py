@@ -1,4 +1,8 @@
 import collections
+import numpy as np
+import scipy.optimize as optim
+import z3
+# from z3 import *
 
 class Machine:
     def __init__(self):
@@ -44,6 +48,48 @@ class Machine:
     #         x = -1
     #     # print(x)
     #     return x
+    def solve_z3(self):
+        nb = []
+        for b in self.buttons:
+            row = [0] * len(self.joltage)
+            for i in b:
+                row[i] = 1
+            nb.append(row)
+
+        variables = [0] * len(self.buttons)
+        s = z3.Solver()
+        for i in range(len(variables)):
+            s.add( sum( [ variables[i] * nb[r][i] for r in range(len(self.buttons)) ] ) == self.joltage_req[i])
+            s.add( variables[i] >= 0 )
+        return 0
+
+    def solve_scipy(self):
+        # this solution works.
+        min_presses = 0
+        joltage = np.asarray(self.joltage_req)
+        nb = []
+        for b in self.buttons:
+            row = [0] * len(self.joltage)
+            for i in b:
+                row[i] = 1
+            nb.append(row)
+        buttons = np.asarray(nb)
+        c = np.asarray([1]*len(self.buttons))
+        buttonst = buttons.transpose()
+        opt = optim.linprog(c, A_eq=buttonst,b_eq = joltage,integrality=1)
+        num_presses = opt.fun
+        # if opt.status != 0:
+        #     print("HOUSTON WE HAVE A i"PROBLEM")
+        #     print(f"The problem is:{opt.status}")
+        #     print(joltage)
+        #     print(opt.fun)
+        #     print(buttonst)
+        #     print(opt)
+
+        #print(f"The fewest buttons needed to be pressed was {num_presses}")
+        min_presses += num_presses
+        # print(f"The total number of buttons that need to be pressed is {tot_few_butt}")
+        return min_presses
 
     def solve(self):
         mp = collections.defaultdict(list)
@@ -79,27 +125,8 @@ class Machine:
         helper(0, 0)
         return min_push
 
-    # def brute_force_powerset_solve(self):
-    #     min_button_presses = float("inf")
-    #     n = len(self.buttons)
-
-    #     def helper(start, path):
-    #         nonlocal min_button_presses
-    #         if start == n:
-    #             # print(path)
-    #             if self.execute(path) == self.lights_req and len(path) < min_button_presses:
-    #                 min_button_presses = len(path)
-    #             return
-
-    #         helper(start + 1, path + [start])
-    #         helper(start + 1, path)
-
-    #     helper(0, [])
-    #     return min_button_presses
-
-
 fname = "2025/puzzle_input/d10p1_example.txt"
-# fname = "2025/puzzle_input/d10p1_input.txt"
+fname = "2025/puzzle_input/d10p1_input.txt"
 def read():
     machines = []
     machine_num = 0
@@ -134,14 +161,13 @@ def read():
             machines.append(m)
     return machines
 
-
 machines = read()
 result = 0
 for m in machines:
     # result += m.brute_force_powerset_solve()
     print()
     print(m)
-    tmp = m.solve()
+    tmp = m.solve_z3()
     print(tmp)
     result += tmp
 print(result)
