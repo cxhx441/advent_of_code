@@ -1,9 +1,21 @@
 import collections
+from PIL import Image
 
 class Coordinate():
     def __init__(self, x, y):
         self.x = int(x)
         self.y = int(y)
+
+def create_image():
+    print("creating_image")
+    img = Image.new('RGB', (maxx+10, maxy+10), color='black')
+    pixels = img.load()
+    for coord in redgreen:
+        pixels[coord[0], coord[1]] = (255, 255, 255)
+    img.save('my new_image.png')
+    print("image_created")
+
+
 
 vlines = set()
 hlines = set()
@@ -99,12 +111,12 @@ redgreen = redset | greenset
 #                 if (0 <= nx <= maxx and 0 <= ny <= maxy):
 #                     q.append((nx, ny))
 
-print("checking")
-for i in range(2, len(red)):
-    if red[i-2].x == red[i-1].x == red[i].x:
-        print(red[i-2], red[i-1], red[i])
-    if red[i-2].y == red[i-1].y == red[i].y:
-        print(red[i-2], red[i-1], red[i])
+# print("checking")
+# for i in range(2, len(red)):
+#     if red[i-2].x == red[i-1].x == red[i].x:
+#         print(red[i-2], red[i-1], red[i])
+#     if red[i-2].y == red[i-1].y == red[i].y:
+#         print(red[i-2], red[i-1], red[i])
 
 for coord in redset:
     if coord in vlines: vlines.remove(coord)
@@ -175,7 +187,9 @@ if red[0].x == red[-1].x:
 
 
 
-def vedgecount(c):
+def check_point(c):
+    if (c.x, c.y) in alledges:
+        return True
     count = 0
     for x, top, bottom in new_vlines:
         if x < c.x and top <= c.y < bottom:
@@ -198,36 +212,51 @@ def check_rectangle(c0, c1):
     c0m = Coordinate(c1.x, c0.y)
     c1m = Coordinate(c0.x, c1.y)
 
-    if not ( (c0m.x, c0m.y) in alledges or vedgecount(c0m) ):
-        return False
-    if not ( (c1m.x, c1m.y) in alledges or vedgecount(c1m) ):
-        return False
+    for x in range(c0.x, c0m.x + 1):
+        if not check_point(Coordinate(x, c0.y)):
+            return False
+    for x in range(c1m.x, c1.x + 1):
+        if not check_point(Coordinate(x, c1m.y)):
+            return False
+    for y in range(c0.y, c1m.y + 1):
+        if not check_point(Coordinate(c0.x, y)):
+            return False
+    for y in range(c0m.y, c1.y + 1):
+        if not check_point(Coordinate(c0m.x, y)):
+            return False
 
     return True
 
-
+# create_image()
 
 largest_area = 0
 n = len(red)
 for i in range(n):
-    for j in range(i + 1, n):
-        x1 = red[i].x
-        y1 = red[i].y
-        x2 = red[j].x
-        y2 = red[j].y
-        h = abs(y2 - y1) + 1
-        w = abs(x2 - x1) + 1
-        area = w * h
-        # area is larger && both mirrored points are either red or between two red points
-        if (area > largest_area):
-            if check_rectangle(red[i], red[j]):
-                largest_area = area
-                print(f"largest_area, area: {largest_area}, {area}")
-            # mirrored1 = Coordinate(x2, y1)
-            # mirrored2 = Coordinate(x1, y2)
+    # 94539,48701
+    # for j in range(i + 1, n):
+    x1 = red[i].x
+    y1 = red[i].y
+    # x2 = red[j].x
+    # y2 = red[j].y
+    # x2, y2 = 94539, 48701
+    # if y1 > y2: continue
+    x2, y2 = 94539,50089
+    if y1 < y2: continue
+    h = abs(y2 - y1) + 1
+    w = abs(x2 - x1) + 1
+    area = w * h
+    # area is larger && both mirrored points are either red or between two red points
+    if (area > largest_area):
+        # if check_rectangle(red[i], red[j]):
+        if check_rectangle(red[i], Coordinate(x2, y2)):
+            largest_area = area
+            print(f"largest_area, area: {largest_area}, {area}")
+        # mirrored1 = Coordinate(x2, y1)
+        # mirrored2 = Coordinate(x1, y2)
 
-            # if (x1, y2) in redgreen and (x2, y1) in redgreen:
-            #     largest_area = area
+        # if (x1, y2) in redgreen and (x2, y1) in redgreen:
+        #     largest_area = area
 # seen.add(largest_area)         # printf("%lu: %d, %d ,, %d, %d\n", largest_area, x1, y1, x2, y2);
+print("prev = 1472215589")
 print(largest_area)
 # print(seen)
