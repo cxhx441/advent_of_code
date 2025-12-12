@@ -82,7 +82,14 @@ def valid_rectangle(p0, p1):
         return False
     if bisect(x_lists[y_max], x_min) != bisect(x_lists[y_max], x_max):
         return False
+
+
+    # don't need for AOC but
+    if bisect(x_lists[y_max], x_max) % 2 == 0: # crosses even number of lines means it entirely outside shape.
+        return False
+
     return True
+
 
 largest_area_p2 = 0
 for area, pair in decreasing_red_pairs:
