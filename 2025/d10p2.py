@@ -2,7 +2,6 @@ import collections
 import numpy as np
 import scipy.optimize as optim
 import z3
-# from z3 import *
 
 class Machine:
     def __init__(self):
@@ -56,13 +55,26 @@ class Machine:
                 row[i] = 1
             nb.append(row)
 
-        variables = [0] * len(self.buttons)
-        s = z3.Solver()
-        for i in range(len(variables)):
-            s.add( sum( [ variables[i] * nb[r][i] for r in range(len(self.buttons)) ] ) == self.joltage_req[i])
-            s.add( variables[i] >= 0 )
-        return 0
+        variables = [z3.Int(f"x_{i}") for i in range(len(self.buttons))]
+        o = z3.Optimize()
+        total = z3.Sum(variables)
+        o.minimize(total)
+        for j, jolt_req in enumerate(self.joltage_req):
+            inter = [ var * nb[i][j] for i, var in enumerate(variables) ]
+            summed = sum( inter )
+            o.add( summed == jolt_req)
 
+        for var in variables:
+            o.add( var >= 0 )
+        if (o.check() == z3.sat):
+            m = o.model()
+            summed = z3.Sum(variables)
+            print(m.evaluate(summed))
+            return m.evaluate(summed).as_long()
+        raise ValueError
+    '''
+    x0, x1, x2, x3, x4 * [ [....], [....], [....], ..]  = 3, 5, 4, 7
+    '''
     def solve_scipy(self):
         # this solution works.
         min_presses = 0
@@ -170,4 +182,4 @@ for m in machines:
     tmp = m.solve_z3()
     print(tmp)
     result += tmp
-print(result)
+print(f"results {result}")
