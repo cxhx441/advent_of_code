@@ -1,6 +1,8 @@
 import collections
 import time
 import copy
+import networkx as nx
+import matplotlib.pyplot as plt
 
 # fname = "2025/puzzle_input/d11p2_example.txt"
 fname = "2025/puzzle_input/d11p1_input.txt"
@@ -26,6 +28,16 @@ def read():
     return adj_list, reverse_adj, all_nodes
 
 adj_list, reverse_adj, all_nodes = read()
+def networkx_solution():
+    G = nx.Graph()
+    for a, val in adj_list.items():
+        for b in val:
+            G.add_edge(a, b)
+    print(list(G))
+    nodes_to_draw = ["svr", "out", "fft", "dac"]
+    nodes_to_label = { n : n for n in G if n in nodes_to_draw}
+    nx.draw(G, with_labels=True, font_color="black", nodelist=nodes_to_draw, labels=nodes_to_label)
+    plt.show()
 
 def get_reachable(start, end):
     stack = [start]
@@ -226,6 +238,7 @@ def kahns_topo():
 
 #     return False
 
+networkx_solution()
 
 if "example" in fname:
     print("\nways_to_reach: EXAMPLE")
