@@ -11,7 +11,9 @@ typedef struct {
     char * w3;
 } logic_gate;
 
+int indeg[MAX_WIRE_HASH_VALUE] = {0};
 int wires[MAX_WIRE_HASH_VALUE] = {-1};
+
 
 int hash(const char* s){
     /* one or two lower case letters can be encoded to (26 * 26) + 26 values. */
@@ -75,7 +77,7 @@ int main(void){
                 lg.op = '>';
             }
             else{
-                wires[hash(lg.w3)] = atio(input)
+                wires[hash(lg.w3)] = atio(input);
             }
 
         }
